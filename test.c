@@ -83,6 +83,8 @@ void playback(short *buf, int len) {
     snd_pcm_close (playback_handle);
 }
 
+// Error handling.
+
 #define CHECKED_SYS(RET)   checked_sys(system, RET, 0)
 #define CHECKED_SYS_REC(RET)   checked_sys(system, RET, depth + 1)
 void checked_sys(pico_System system, pico_Status ret, int depth) {
@@ -133,6 +135,7 @@ void checked_sys(pico_System system, pico_Status ret, int depth) {
     }
 }
 
+// This is all just copy and pasted from the above with system replaced by engine.
 #define CHECKED_ENGINE(RET)   checked_engine(engine, RET, 0)
 #define CHECKED_ENGINE_REC(RET)   checked_engine(engine, RET, depth + 1)
 void checked_engine(pico_Engine engine, pico_Status ret, int depth) {
@@ -187,8 +190,9 @@ int main() {
     pico_System system;
 
     // Pico asks us to initialize memory, and won't otherwise allocate memory.
-    // Unfortunately it doesn't tell us how much memory it's going to need, so
-    // that might be a bit of trial and error. I just picked an arbitrary value.
+    // Unfortunately it doesn't tell us exactly how much memory it's going to need.
+    // The documentation suggests they had a target of 200KB when creating it,
+    // but it crashes at 1MB. So we just give it 5MB.
 
     CHECKED_SYS(pico_initialize(
         malloc(MEM_SIZE),
@@ -317,6 +321,8 @@ int main() {
     while( ret == PICO_STEP_BUSY );
 
     playback(buf, buf_len);
+
+    // We could cleanup here, but program termination will do it for us anyways.
 
     return 0;
 }
