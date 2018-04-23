@@ -186,7 +186,16 @@ void checked_engine(pico_Engine engine, pico_Status ret, int depth) {
     }
 }
 
-int main() {
+int main(int argc, char **argv) {
+    char *text;
+    if( argc > 1 ) {
+        text = argv[1];
+    }
+    else {
+        text = "Hello world!";
+    }
+
+
     pico_System system;
 
     // Pico asks us to initialize memory, and won't otherwise allocate memory.
@@ -270,8 +279,6 @@ int main() {
         &engine
     ));
 
-    char *text = "Hello world!";
-
     pico_Int16 bytes_copied;
     CHECKED_ENGINE(pico_putTextUtf8(
         engine,
@@ -280,7 +287,7 @@ int main() {
         &bytes_copied
     ));
 
-    printf("bytes copied: %d/%d\n", bytes_copied, strlen(text));
+    printf("bytes copied: %d/%d\n", bytes_copied, strlen(text) + 1);
 
     FILE *audio_f = fopen("/dev/audio", "w");
 
